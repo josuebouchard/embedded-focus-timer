@@ -1,0 +1,103 @@
+# =========================
+# ESP-IDF / CMake build
+# =========================
+build/
+sdkconfig
+sdkconfig.old
+sdkconfig.defaults*
+sdkconfig.ci
+sdkconfig.bak
+cmake-build-*/
+
+# CMake / Ninja / Make artifacts (if they appear at root)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+*.ninja
+*.ninja_deps
+*.ninja_log
+rules.ninja
+Makefile
+
+# ESP-IDF generated outputs / tooling
+# (Sometimes appear depending on IDF version / workflows)
+managed_components/
+dependencies.lock
+*.bin
+*.elf
+*.map
+*.d
+*.o
+*.a
+*.obj
+*.su
+
+# Partition tables / bootloader artifacts (usually under build/, but safe)
+bootloader/
+partition_table/
+
+# =========================
+# Python / tooling
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# =========================
+# VS Code / ESP-IDF extension
+# =========================
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ESP-IDF extension sometimes generates these
+.vscode-ctags
+.vscode/*.log
+
+# =========================
+# CLion / JetBrains
+# =========================
+.idea/
+*.iml
+out/
+
+# =========================
+# Eclipse
+# =========================
+.project
+.cproject
+.settings/
+
+# =========================
+# macOS / Windows / Linux junk
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# Editor / backup files
+# =========================
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# =========================
+# Logs
+# =========================
+*.log
