@@ -20,14 +20,13 @@ static inline const char *pomodoro_err_to_string(pomodoro_err_t err) {
   return (err < sizeof(names) / sizeof(names[0])) ? names[err] : "UNKNOWN";
 }
 
+static void print_status(const pomodoro_session_t *session, uint32_t now_ms) {
   static const char *state_names[] = {
       "IDLE",
       "RUNNING",
       "PAUSED",
       "FINISHED",
   };
-
-static void print_status(const pomodoro_session_t *session, uint32_t now_ms) {
   const char *state_str = (session->state < POMODORO_STATE_COUNT)
                               ? state_names[session->state]
                               : "UNKNOWN";
