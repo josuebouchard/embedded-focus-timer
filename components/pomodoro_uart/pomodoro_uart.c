@@ -1,4 +1,4 @@
-#include "uart.h"
+#include "pomodoro_uart.h"
 #include "driver/uart.h"
 #include "esp_err.h"
 #include <ctype.h>
@@ -120,10 +120,10 @@ esp_err_t read_line(char *buf, uint32_t length, TickType_t ticks_to_wait,
     // Flush rest of overly-long line
     if (i == length - 1) {
       do {
-        int n = uart_read_bytes(UART_PORT, &character_read, 1, portMAX_DELAY);
-        if (n < 0)
+        int bytes_read = uart_read_bytes(UART_PORT, &character_read, 1, portMAX_DELAY);
+        if (bytes_read < 0)
           return ESP_FAIL;
-      } while (character_read != '\n');
+      } while (character_read != '\n' && character_read != '\r');
     }
 
     // Never forget termination byte

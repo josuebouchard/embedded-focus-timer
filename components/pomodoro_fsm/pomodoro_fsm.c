@@ -177,7 +177,7 @@ void pomodoro_effects_set(pomodoro_effects_t *effects,
   assert(effects != NULL);
   assert(effects_array != NULL);
   assert(effects_amount <= MAX_EFFECTS);
-  
+
   // Cap the amount of effects
   uint32_t effects_being_written =
       effects_amount <= MAX_EFFECTS ? effects_amount : MAX_EFFECTS;

@@ -1,5 +1,5 @@
-#ifndef EVENTS_QUEUE_H
-#define EVENTS_QUEUE_H
+#ifndef POMODORO_REACTOR_TYPES_H
+#define POMODORO_REACTOR_TYPES_H
 
 #include "pomodoro_fsm.h"
 
@@ -8,4 +8,4 @@ typedef struct {
   uint32_t timestamp_ms;
 } timestamped_event_t;
 
-#endif // EVENTS_QUEUE_H
+#endif // POMODORO_REACTOR_TYPES_H

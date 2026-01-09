@@ -1,6 +1,6 @@
 #include "pomodoro_timer.h"
-#include "events_queue.h"
 #include "freertos/FreeRTOS.h"
+#include "pomodoro_reactor_types.h"
 
 static void timer_callback(void *args) {
   QueueHandle_t queue = (QueueHandle_t)args;

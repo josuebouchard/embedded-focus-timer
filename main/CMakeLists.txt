@@ -1,3 +1,3 @@
-idf_component_register(SRCS "pomodoro_timer.c" "pomodoro_fsm.c" "main.c" "uart.c"
-                       PRIV_REQUIRES esp_driver_uart esp_timer
+idf_component_register(SRCS "main.c" "uart_task.c"
+                       PRIV_REQUIRES pomodoro_fsm pomodoro_timer pomodoro_uart pomodoro_reactor
                        INCLUDE_DIRS ".")

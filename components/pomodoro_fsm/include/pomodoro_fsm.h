@@ -8,7 +8,19 @@ typedef enum {
   POMODORO_STATUS_INVALID_TRANSITION,
   POMODORO_STATUS_ILLEGAL_TRANSITION,
   POMODORO_STATUS_INVALID_ARGUMENTS,
+  // MUST BE LAST: Used for getting the count
+  POMODORO_STATUS_COUNT,
 } pomodoro_err_t;
+
+static inline const char *pomodoro_err_to_string(pomodoro_err_t err) {
+  static const char *err_names[] = {
+      "OK",
+      "INVALID_TRANSITION",
+      "ILLEGAL_TRANSITION",
+      "INVALID_ARGUMENTS",
+  };
+  return (err < POMODORO_STATUS_COUNT) ? err_names[err] : "UNKNOWN";
+}
 
 typedef enum {
   POMODORO_STATE_IDLE = 0,
@@ -18,6 +30,16 @@ typedef enum {
   // MUST BE LAST: Used for getting the count
   POMODORO_STATE_COUNT,
 } pomodoro_state_t;
+
+static inline const char *pomodoro_state_to_string(pomodoro_state_t state) {
+  static const char *state_names[] = {
+      "IDLE",
+      "RUNNING",
+      "PAUSED",
+      "FINISHED",
+  };
+  return (state < POMODORO_STATE_COUNT) ? state_names[state] : "UNKNOWN";
+}
 
 typedef enum {
   POMODORO_EVT_START = 0,
