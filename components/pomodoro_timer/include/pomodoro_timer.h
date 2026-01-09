@@ -9,7 +9,6 @@
 typedef struct {
   esp_timer_create_args_t timer_args;
   esp_timer_handle_t timer_handle;
-  QueueHandle_t queue;
 } pomodoro_timer_context;
 
 void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
