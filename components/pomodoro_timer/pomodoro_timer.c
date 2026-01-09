@@ -24,15 +24,14 @@ void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
 }
 
 void pomodoro_timer_handle_effects(pomodoro_timer_context *context,
-                                   const pomodoro_session_t *session,
-                                   TickType_t now_ms) {
-  for (uint32_t i = 0; i < session->effects.count; i++) {
-    pomodoro_effect_t effect = session->effects.effects[i];
+                                   const pomodoro_effects_t effects) {
+  for (uint32_t i = 0; i < effects.count; i++) {
+    pomodoro_effect_t effect = effects.effects[i];
 
     uint32_t timeout_ms;
-    switch (effect) {
+    switch (effect.type) {
     case POMODORO_EFFECT_TIMER_START:
-      timeout_ms = session->end_time_ms - now_ms;
+      timeout_ms = effect.timer_start.timeout_ms;
       esp_timer_start_once(context->timer_handle, (uint64_t)timeout_ms * 1000);
       break;
     case POMODORO_EFFECT_TIMER_STOP:

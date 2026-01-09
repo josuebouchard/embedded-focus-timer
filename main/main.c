@@ -70,7 +70,6 @@ void app_main(void) {
     }
 
     // === Invoke handlers ===
-    pomodoro_timer_handle_effects(&pomodoro_timer_context, &session,
-                                  timestamped_event.timestamp_ms);
+    pomodoro_timer_handle_effects(&pomodoro_timer_context, session.effects);
   }
 }

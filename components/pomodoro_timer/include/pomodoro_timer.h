@@ -16,7 +16,6 @@ void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
                                        QueueHandle_t queue);
 
 void pomodoro_timer_handle_effects(pomodoro_timer_context *context,
-                                   const pomodoro_session_t *session,
-                                   TickType_t now_ms);
+                                   const pomodoro_effects_t effects);
 
 #endif // POMODORO_TIMER_H

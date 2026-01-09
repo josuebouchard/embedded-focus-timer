@@ -55,6 +55,15 @@ typedef enum {
 typedef enum {
   POMODORO_EFFECT_TIMER_START,
   POMODORO_EFFECT_TIMER_STOP,
+} pomodoro_effect_type_t;
+
+typedef struct {
+  pomodoro_effect_type_t type;
+  union {
+    struct {
+      uint32_t timeout_ms;
+    } timer_start;
+  };
 } pomodoro_effect_t;
 
 #define MAX_EFFECTS 6
