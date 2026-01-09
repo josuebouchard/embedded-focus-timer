@@ -14,6 +14,7 @@ This document collects things I researched for this project: lessons learned and
   - Event transitions might be dependent on parameters such as `now_ms` (current time in milliseconds). In those cases, that context can be added as a parameter to the dispatch function, or modeled as a fat enum if it's only pertinent to one state.
   - Effects should contain all the information the handlers might need to act upon it.
 - **In some cases there are no destructors in embedded**: Given that the assumption is that the microcontroller will run in a loop until powered off or reset, there are some cases where there is no need to bother about destructors/free.
+- **Use `assert` for programmer errors, `if`s for dynamic input errors**: `assert`s should be used for internal/setup invariants, since they are removed on release builds without any penalty. For external/dynamic input, `if`s should be used since they won't be removed.
 
 ## The influence of Domain Driven Design (DDD) in this project
 

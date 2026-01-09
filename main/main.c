@@ -10,12 +10,22 @@
 #define UART_TAG "UART_TAG"
 #define UART_BUFFER_SIZE 200
 
-static const char *state_names[] = {
-    "IDLE",
-    "RUNNING",
-    "PAUSED",
-    "FINISHED",
-};
+static inline const char *pomodoro_err_to_string(pomodoro_err_t err) {
+  static const char *names[] = {
+      "OK",
+      "INVALID_TRANSITION",
+      "ILLEGAL_TRANSITION",
+      "INVALID_ARGUMENTS",
+  };
+  return (err < sizeof(names) / sizeof(names[0])) ? names[err] : "UNKNOWN";
+}
+
+  static const char *state_names[] = {
+      "IDLE",
+      "RUNNING",
+      "PAUSED",
+      "FINISHED",
+  };
 
 static void print_status(const pomodoro_session_t *session, uint32_t now_ms) {
   const char *state_str = (session->state < POMODORO_STATE_COUNT)
@@ -147,8 +157,13 @@ void app_main(void) {
     }
 
     // On event, dispatch it to fsm
-    pomodoro_session_dispatch(&session, timestamped_event.event,
-                              timestamped_event.timestamp_ms);
+    pomodoro_err_t pomodoro_dispatch_status = pomodoro_session_dispatch(
+        &session, timestamped_event.event, timestamped_event.timestamp_ms);
+
+    if (pomodoro_dispatch_status != POMODORO_STATUS_OK) {
+      const char *status_str = pomodoro_err_to_string(pomodoro_dispatch_status);
+      ESP_LOGW(TAG, "Dispatch failed: %s", status_str);
+    }
 
     // === Invoke handlers ===
     pomodoro_timer_handle_effects(&pomodoro_timer_context, &session,

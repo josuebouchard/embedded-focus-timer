@@ -4,6 +4,13 @@
 #include <stdint.h>
 
 typedef enum {
+  POMODORO_STATUS_OK = 0,
+  POMODORO_STATUS_INVALID_TRANSITION,
+  POMODORO_STATUS_ILLEGAL_TRANSITION,
+  POMODORO_STATUS_INVALID_ARGUMENTS,
+} pomodoro_err_t;
+
+typedef enum {
   POMODORO_STATE_IDLE = 0,
   POMODORO_STATE_RUNNING,
   POMODORO_STATE_PAUSED,
@@ -70,7 +77,8 @@ typedef struct {
 void pomodoro_session_initialize(pomodoro_session_t *session,
                                  const pomodoro_config_t *config);
 
-void pomodoro_session_dispatch(pomodoro_session_t *session,
-                               pomodoro_event_t event, uint32_t now_ms);
+pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
+                                         pomodoro_event_t event,
+                                         uint32_t now_ms);
 
 #endif // POMODORO_FSM_H

@@ -1,16 +1,12 @@
 #include "pomodoro_fsm.h"
+#include <assert.h>
 #include <stdbool.h>
-
+#include <stddef.h>
 /*
  * @brief Allows for switching states and events without requiring multiple
  * switches
  */
 #define KEY(state, event) ((state) * POMODORO_EVT_COUNT + (event))
-
-static void handle_illegal_transition(pomodoro_session_t *session,
-                                      pomodoro_event_t event) {
-  // TODO!
-}
 
 static bool has_next_phase(const pomodoro_session_t *session) {
   return session->phase_index + 1 < session->config->count;
@@ -60,17 +56,32 @@ static void timer_reset_context(pomodoro_session_t *session) {
 
 void pomodoro_session_initialize(pomodoro_session_t *session,
                                  const pomodoro_config_t *config) {
+  // Sanity checks
+  assert(session != NULL);
+  assert(config != NULL);
+  assert(config->count > 0 && config->count <= MAX_PHASES);
+
   session->state = POMODORO_STATE_IDLE;
   session->config = config;
   timer_reset_context(session);
   pomodoro_effects_clear(&session->effects);
 }
 
-void pomodoro_session_dispatch(pomodoro_session_t *session,
-                               const pomodoro_event_t event,
-                               const uint32_t now_ms) {
+pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
+                                         const pomodoro_event_t event,
+                                         const uint32_t now_ms) {
+  // Sanity checks
+  assert(session->phase_index < session->config->count);
+  assert(session->config->count <= MAX_PHASES);
+
+  if (session == NULL || event >= POMODORO_EVT_COUNT) {
+    return POMODORO_STATUS_INVALID_ARGUMENTS;
+  }
+
+  // Clear effects
   pomodoro_effects_clear(&session->effects);
 
+  // Process events
   switch (KEY(session->state, event)) {
 
   // restart event
@@ -139,25 +150,34 @@ void pomodoro_session_dispatch(pomodoro_session_t *session,
     }
     break;
   case (KEY(POMODORO_STATE_PAUSED, POMODORO_EVT_TIMEOUT)):
-    handle_illegal_transition(session, event);
-    break;
+    return POMODORO_STATUS_ILLEGAL_TRANSITION;
 
   // FINISHED
   case (KEY(POMODORO_STATE_FINISHED, POMODORO_EVT_TIMEOUT)):
-    handle_illegal_transition(session, event);
-    break;
+    return POMODORO_STATUS_ILLEGAL_TRANSITION;
 
-    // Ignore all other transitions
+  // Ignore all other transitions
   default:
-    break;
+    return POMODORO_STATUS_INVALID_TRANSITION;
   }
+
+  return POMODORO_STATUS_OK;
 }
 
-void pomodoro_effects_clear(pomodoro_effects_t *effects) { effects->count = 0; }
+void pomodoro_effects_clear(pomodoro_effects_t *effects) {
+  assert(effects != NULL);
+  effects->count = 0;
+}
 
 void pomodoro_effects_set(pomodoro_effects_t *effects,
                           const pomodoro_effect_t effects_array[],
                           const uint32_t effects_amount) {
+
+  // Sanity checks
+  assert(effects != NULL);
+  assert(effects_array != NULL);
+  assert(effects_amount <= MAX_EFFECTS);
+  
   // Cap the amount of effects
   uint32_t effects_being_written =
       effects_amount <= MAX_EFFECTS ? effects_amount : MAX_EFFECTS;
