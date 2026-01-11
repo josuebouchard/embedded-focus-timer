@@ -7,20 +7,20 @@
 #include <stdint.h>
 #include <string.h>
 
-#define TAG "UI"
+#define UI_TAG "UI"
 #define UI_UPDATE_INTERVAL_MS 1000
 
 void ui_task_initialize(ui_context_t *ui_context,
-                        ui_fsm_snapshot *first_snapshot) {
-  ui_context->queue = xQueueCreate(1, sizeof(ui_fsm_snapshot));
+                        ui_fsm_snapshot_t *first_snapshot) {
+  ui_context->queue = xQueueCreate(1, sizeof(ui_fsm_snapshot_t));
   configASSERT(ui_context->queue);
 
-  memcpy(&ui_context->snapshot, first_snapshot, sizeof(ui_fsm_snapshot));
+  memcpy(&ui_context->snapshot, first_snapshot, sizeof(ui_fsm_snapshot_t));
 }
 
 static void print_snapshot(ui_context_t *ctx, uint32_t now_ms) {
   const size_t PRINT_BUFFER_SIZE = sizeof(ctx->print_buffer);
-  const ui_fsm_snapshot *snapshot = &ctx->snapshot;
+  const ui_fsm_snapshot_t *snapshot = &ctx->snapshot;
 
   int required = snprintf(
       ctx->print_buffer, PRINT_BUFFER_SIZE,
@@ -31,9 +31,9 @@ static void print_snapshot(ui_context_t *ctx, uint32_t now_ms) {
       pomodoro_time_remaining_ms(snapshot, now_ms));
 
   if (required < 0) {
-    ESP_LOGW(TAG, "There has been an encoding problem");
+    ESP_LOGW(UI_TAG, "There has been an encoding problem");
   } else if (required >= PRINT_BUFFER_SIZE) {
-    ESP_LOGW(TAG, "Buffer truncated! Needed %d bytes, had %d", required,
+    ESP_LOGW(UI_TAG, "Buffer truncated! Needed %d bytes, had %d", required,
              PRINT_BUFFER_SIZE);
   }
 
@@ -43,7 +43,7 @@ static void print_snapshot(ui_context_t *ctx, uint32_t now_ms) {
 void ui_task(void *args) {
   ui_context_t *context = (ui_context_t *)args;
 
-  ESP_LOGI(TAG, "UI Task initialized");
+  ESP_LOGI(UI_TAG, "UI Task initialized");
 
   while (true) {
     uint32_t queue_receive_timeout =

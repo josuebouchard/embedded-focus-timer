@@ -35,6 +35,12 @@ void app_main(void) {
   QueueHandle_t queue = xQueueCreate(8, sizeof(timestamped_event_t));
   configASSERT(queue);
 
+  // UART context
+  uart_task_context_t uart_task_ctx = {
+      .pomodoro_session = &session,
+      .queue_handle = queue,
+  };
+
   // UI context
   ui_context_t ui_task_context;
   ui_task_initialize(&ui_task_context, &session);
@@ -42,10 +48,6 @@ void app_main(void) {
   // === START tasks ===
   // == UART ==
 
-  uart_task_context_t uart_task_ctx = {
-      .pomodoro_session = &session,
-      .queue_handle = queue,
-  };
   TaskHandle_t uart_task_handle = NULL;
   xTaskCreate(uart_task, "uart-command-parser", 2048, &uart_task_ctx,
               tskIDLE_PRIORITY, &uart_task_handle);

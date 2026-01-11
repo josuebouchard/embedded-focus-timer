@@ -123,8 +123,8 @@ pomodoro_time_remaining_ms(const pomodoro_session_t *session, uint32_t now_ms) {
   switch (session->state) {
   case POMODORO_STATE_IDLE:
   case POMODORO_STATE_RUNNING: {
-    int32_t timeDifference = (int32_t)(session->end_time_ms - now_ms);
-    return (timeDifference > 0) ? (uint32_t)timeDifference : 0;
+    int32_t time_difference = (int32_t)(session->end_time_ms - now_ms);
+    return (time_difference > 0) ? (uint32_t)time_difference : 0;
   }
 
   case POMODORO_STATE_PAUSED:
