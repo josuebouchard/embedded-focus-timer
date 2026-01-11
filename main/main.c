@@ -25,7 +25,8 @@ void app_main(void) {
   };
 
   pomodoro_session_t session;
-  pomodoro_session_initialize(&session, &pomodoro_config);
+  pomodoro_effects_t effects;
+  pomodoro_session_initialize(&session, &effects, &pomodoro_config);
 
   // === END Finite State Machine initialization ===
 
@@ -61,8 +62,9 @@ void app_main(void) {
     }
 
     // On event, dispatch it to fsm
-    pomodoro_err_t pomodoro_dispatch_status = pomodoro_session_dispatch(
-        &session, timestamped_event.event, timestamped_event.timestamp_ms);
+    pomodoro_err_t pomodoro_dispatch_status =
+        pomodoro_session_dispatch(&session, timestamped_event.event,
+                                  timestamped_event.timestamp_ms, &effects);
 
     if (pomodoro_dispatch_status != POMODORO_STATUS_OK) {
       const char *status_str = pomodoro_err_to_string(pomodoro_dispatch_status);
@@ -70,6 +72,6 @@ void app_main(void) {
     }
 
     // === Invoke handlers ===
-    pomodoro_timer_handle_effects(&pomodoro_timer_context, session.effects);
+    pomodoro_timer_handle_effects(&pomodoro_timer_context, effects);
   }
 }

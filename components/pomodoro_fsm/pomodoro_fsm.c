@@ -56,6 +56,7 @@ static void timer_reset_context(pomodoro_session_t *session) {
 }
 
 void pomodoro_session_initialize(pomodoro_session_t *session,
+                                 pomodoro_effects_t *effects,
                                  const pomodoro_config_t *config) {
   // Sanity checks
   assert(session != NULL);
@@ -65,12 +66,13 @@ void pomodoro_session_initialize(pomodoro_session_t *session,
   session->state = POMODORO_STATE_IDLE;
   session->config = config;
   timer_reset_context(session);
-  pomodoro_effects_clear(&session->effects);
+  pomodoro_effects_clear(effects);
 }
 
 pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
                                          const pomodoro_event_t event,
-                                         const uint32_t now_ms) {
+                                         const uint32_t now_ms,
+                                         pomodoro_effects_t *effects) {
   // Sanity checks
   assert(session->phase_index < session->config->count);
   assert(session->config->count <= MAX_PHASES);
@@ -80,7 +82,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
   }
 
   // Clear effects
-  pomodoro_effects_clear(&session->effects);
+  pomodoro_effects_clear(effects);
 
   uint32_t timeout_ms;
 
@@ -94,7 +96,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
   case (KEY(POMODORO_STATE_FINISHED, POMODORO_EVT_RESTART)):
     session->state = POMODORO_STATE_IDLE;
     timer_reset_context(session);
-    pomodoro_effects_set(&session->effects,
+    pomodoro_effects_set(effects,
                          (pomodoro_effect_t[]){
                              {.type = POMODORO_EFFECT_TIMER_STOP},
                          },
@@ -106,7 +108,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
     session->state = POMODORO_STATE_RUNNING;
     set_end_time_current_phase(session, now_ms);
     timeout_ms = current_phase(session)->duration_ms;
-    pomodoro_effects_set(&session->effects,
+    pomodoro_effects_set(effects,
                          (pomodoro_effect_t[]){
                              {
                                  .type = POMODORO_EFFECT_TIMER_START,
@@ -120,7 +122,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
   case KEY(POMODORO_STATE_RUNNING, POMODORO_EVT_PAUSE):
     session->state = POMODORO_STATE_PAUSED;
     store_remaining_time(session, now_ms);
-    pomodoro_effects_set(&session->effects,
+    pomodoro_effects_set(effects,
                          (pomodoro_effect_t[]){
                              {.type = POMODORO_EFFECT_TIMER_STOP},
                          },
@@ -132,7 +134,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
       session->state = POMODORO_STATE_RUNNING;
       advance_phase(session, now_ms);
       timeout_ms = current_phase(session)->duration_ms;
-      pomodoro_effects_set(&session->effects,
+      pomodoro_effects_set(effects,
                            (pomodoro_effect_t[]){{
                                .type = POMODORO_EFFECT_TIMER_START,
                                .timer_start.timeout_ms = timeout_ms,
@@ -141,7 +143,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
     } else {
       session->state = POMODORO_STATE_FINISHED;
       zero_time_fields(session);
-      pomodoro_effects_set(&session->effects,
+      pomodoro_effects_set(effects,
                            (pomodoro_effect_t[]){
                                {.type = POMODORO_EFFECT_TIMER_STOP},
                            },
@@ -154,7 +156,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
     session->state = POMODORO_STATE_RUNNING;
     timeout_ms = session->remaining_ms;
     restore_remaining_time(session, now_ms);
-    pomodoro_effects_set(&session->effects,
+    pomodoro_effects_set(effects,
                          (pomodoro_effect_t[]){
                              {
                                  .type = POMODORO_EFFECT_TIMER_START,
@@ -168,7 +170,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
       session->state = POMODORO_STATE_RUNNING;
       advance_phase(session, now_ms);
       timeout_ms = current_phase(session)->duration_ms;
-      pomodoro_effects_set(&session->effects,
+      pomodoro_effects_set(effects,
                            (pomodoro_effect_t[]){
                                {
                                    .type = POMODORO_EFFECT_TIMER_START,
@@ -179,7 +181,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
     } else {
       session->state = POMODORO_STATE_FINISHED;
       zero_time_fields(session);
-      pomodoro_effects_set(&session->effects,
+      pomodoro_effects_set(effects,
                            (pomodoro_effect_t[]){
                                {.type = POMODORO_EFFECT_TIMER_STOP},
                            },

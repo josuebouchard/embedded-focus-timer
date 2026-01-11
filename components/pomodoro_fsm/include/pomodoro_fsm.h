@@ -101,15 +101,15 @@ typedef struct {
   // Timing
   uint32_t end_time_ms;
   uint32_t remaining_ms;
-  // Effects
-  pomodoro_effects_t effects;
 } pomodoro_session_t;
 
 void pomodoro_session_initialize(pomodoro_session_t *session,
+                                 pomodoro_effects_t *effects,
                                  const pomodoro_config_t *config);
 
 pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
                                          pomodoro_event_t event,
-                                         uint32_t now_ms);
+                                         uint32_t now_ms,
+                                         pomodoro_effects_t *effects);
 
 #endif // POMODORO_FSM_H
