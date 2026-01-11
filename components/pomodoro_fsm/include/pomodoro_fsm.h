@@ -112,4 +112,29 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
                                          uint32_t now_ms,
                                          pomodoro_effects_t *effects);
 
+static inline const pomodoro_phase_t *
+pomodoro_current_phase(const pomodoro_session_t *session) {
+  return &session->config->phases[session->phase_index];
+}
+
+static inline uint32_t
+pomodoro_time_remaining_ms(const pomodoro_session_t *session, uint32_t now_ms) {
+
+  switch (session->state) {
+  case POMODORO_STATE_IDLE:
+  case POMODORO_STATE_RUNNING: {
+    int32_t timeDifference = (int32_t)(session->end_time_ms - now_ms);
+    return (timeDifference > 0) ? (uint32_t)timeDifference : 0;
+  }
+
+  case POMODORO_STATE_PAUSED:
+    return session->remaining_ms;
+
+  case POMODORO_STATE_FINISHED:
+  case POMODORO_STATE_COUNT:
+  default:
+    return 0;
+  }
+}
+
 #endif // POMODORO_FSM_H

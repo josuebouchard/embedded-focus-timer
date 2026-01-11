@@ -13,14 +13,9 @@ static bool has_next_phase(const pomodoro_session_t *session) {
   return session->phase_index + 1 < session->config->count;
 }
 
-static inline const pomodoro_phase_t *
-current_phase(const pomodoro_session_t *session) {
-  return &session->config->phases[session->phase_index];
-}
-
 static void set_end_time_current_phase(pomodoro_session_t *session,
                                        uint32_t now_ms) {
-  session->end_time_ms = now_ms + current_phase(session)->duration_ms;
+  session->end_time_ms = now_ms + pomodoro_current_phase(session)->duration_ms;
 }
 
 static void advance_phase(pomodoro_session_t *session, uint32_t now_ms) {
@@ -107,7 +102,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
   case KEY(POMODORO_STATE_IDLE, POMODORO_EVT_START):
     session->state = POMODORO_STATE_RUNNING;
     set_end_time_current_phase(session, now_ms);
-    timeout_ms = current_phase(session)->duration_ms;
+    timeout_ms = pomodoro_current_phase(session)->duration_ms;
     pomodoro_effects_set(effects,
                          (pomodoro_effect_t[]){
                              {
@@ -133,7 +128,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
     if (has_next_phase(session)) {
       session->state = POMODORO_STATE_RUNNING;
       advance_phase(session, now_ms);
-      timeout_ms = current_phase(session)->duration_ms;
+      timeout_ms = pomodoro_current_phase(session)->duration_ms;
       pomodoro_effects_set(effects,
                            (pomodoro_effect_t[]){{
                                .type = POMODORO_EFFECT_TIMER_START,
@@ -169,7 +164,7 @@ pomodoro_err_t pomodoro_session_dispatch(pomodoro_session_t *session,
     if (has_next_phase(session)) {
       session->state = POMODORO_STATE_RUNNING;
       advance_phase(session, now_ms);
-      timeout_ms = current_phase(session)->duration_ms;
+      timeout_ms = pomodoro_current_phase(session)->duration_ms;
       pomodoro_effects_set(effects,
                            (pomodoro_effect_t[]){
                                {
