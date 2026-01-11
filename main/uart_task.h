@@ -11,7 +11,7 @@
 typedef struct {
   const pomodoro_session_t *pomodoro_session;
   QueueHandle_t queue_handle;
-} uart_task_ctx_t;
+} uart_task_context_t;
 
 void uart_task(void *args);
 

@@ -13,7 +13,7 @@ static void timer_callback(void *args) {
   xQueueSend(queue, &evt, 0);
 }
 
-void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
+void pomodoro_timer_context_initialize(pomodoro_timer_context_t *context,
                                        QueueHandle_t queue) {
   esp_timer_create_args_t *timer_args = &context->timer_args;
   timer_args->name = "focus_timer";
@@ -23,7 +23,7 @@ void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
   esp_timer_create(&context->timer_args, &context->timer_handle);
 }
 
-void pomodoro_timer_handle_effects(pomodoro_timer_context *context,
+void pomodoro_timer_handle_effects(pomodoro_timer_context_t *context,
                                    const pomodoro_effects_t *effects) {
   for (uint32_t i = 0; i < effects->count; i++) {
     pomodoro_effect_t effect = effects->effects[i];

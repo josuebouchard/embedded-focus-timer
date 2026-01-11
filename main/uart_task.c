@@ -40,7 +40,7 @@ static bool handle_command(const char *cmd, pomodoro_event_t *event_ptr) {
 }
 
 void uart_task(void *args) {
-  uart_task_ctx_t *ctx = (uart_task_ctx_t *)args;
+  uart_task_context_t *ctx = (uart_task_context_t *)args;
   timestamped_event_t timestamped_event;
 
   char uart_buffer[UART_BUFFER_SIZE];

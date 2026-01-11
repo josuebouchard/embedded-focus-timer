@@ -42,7 +42,7 @@ void app_main(void) {
   // === START tasks ===
   // == UART ==
 
-  uart_task_ctx_t uart_task_ctx = {
+  uart_task_context_t uart_task_ctx = {
       .pomodoro_session = &session,
       .queue_handle = queue,
   };
@@ -52,7 +52,7 @@ void app_main(void) {
 
   // == TIMERS ==
 
-  pomodoro_timer_context pomodoro_timer_context;
+  pomodoro_timer_context_t pomodoro_timer_context;
   pomodoro_timer_context_initialize(&pomodoro_timer_context, queue);
 
   // == UI ==
