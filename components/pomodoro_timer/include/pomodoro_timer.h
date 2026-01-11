@@ -15,6 +15,6 @@ void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
                                        QueueHandle_t queue);
 
 void pomodoro_timer_handle_effects(pomodoro_timer_context *context,
-                                   const pomodoro_effects_t effects);
+                                   const pomodoro_effects_t *effects);
 
 #endif // POMODORO_TIMER_H

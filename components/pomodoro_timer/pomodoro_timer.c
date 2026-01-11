@@ -24,9 +24,9 @@ void pomodoro_timer_context_initialize(pomodoro_timer_context *context,
 }
 
 void pomodoro_timer_handle_effects(pomodoro_timer_context *context,
-                                   const pomodoro_effects_t effects) {
-  for (uint32_t i = 0; i < effects.count; i++) {
-    pomodoro_effect_t effect = effects.effects[i];
+                                   const pomodoro_effects_t *effects) {
+  for (uint32_t i = 0; i < effects->count; i++) {
+    pomodoro_effect_t effect = effects->effects[i];
 
     uint32_t timeout_ms;
     switch (effect.type) {

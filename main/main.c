@@ -84,7 +84,7 @@ void app_main(void) {
     }
 
     // === Invoke handlers ===
-    pomodoro_timer_handle_effects(&pomodoro_timer_context, effects);
+    pomodoro_timer_handle_effects(&pomodoro_timer_context, &effects);
 
     if (pomodoro_dispatch_status == POMODORO_STATUS_OK) {
       ui_update_snapshot(&ui_task_context, &session);
