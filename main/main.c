@@ -1,6 +1,5 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h" // required for pdTICKS_TO_MS and configASSERT
-#include "freertos/idf_additions.h"
 #include "freertos/queue.h"
 #include "pomodoro_fsm.h"
 #include "pomodoro_reactor_types.h"
