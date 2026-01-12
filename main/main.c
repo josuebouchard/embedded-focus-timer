@@ -32,13 +32,13 @@ void app_main(void) {
   // === END Finite State Machine initialization ===
 
   // Timestamped atomic queue
-  QueueHandle_t queue = xQueueCreate(8, sizeof(timestamped_event_t));
-  configASSERT(queue);
+  QueueHandle_t reactor_queue = xQueueCreate(8, sizeof(timestamped_event_t));
+  configASSERT(reactor_queue);
 
   // UART context
   uart_task_context_t uart_task_ctx = {
       .pomodoro_session = &session,
-      .queue_handle = queue,
+      .queue_handle = reactor_queue,
   };
 
   // UI context
@@ -55,7 +55,7 @@ void app_main(void) {
   // == TIMERS ==
 
   pomodoro_timer_context_t pomodoro_timer_context;
-  pomodoro_timer_context_initialize(&pomodoro_timer_context, queue);
+  pomodoro_timer_context_initialize(&pomodoro_timer_context, reactor_queue);
 
   // == UI ==
 
@@ -69,26 +69,35 @@ void app_main(void) {
 
   while (true) {
     timestamped_event_t timestamped_event;
-    if (!xQueueReceive(queue, &timestamped_event, portMAX_DELAY)) {
+    if (!xQueueReceive(reactor_queue, &timestamped_event, portMAX_DELAY)) {
       // -- No event --
       continue;
     }
 
-    // On event, dispatch it to fsm
-    pomodoro_err_t pomodoro_dispatch_status =
-        pomodoro_session_dispatch(&session, timestamped_event.event,
-                                  timestamped_event.timestamp_ms, &effects);
+    switch (timestamped_event.type) {
 
-    if (pomodoro_dispatch_status != POMODORO_STATUS_OK) {
-      const char *status_str = pomodoro_err_to_string(pomodoro_dispatch_status);
-      ESP_LOGW(TAG, "Dispatch failed: %s", status_str);
-    }
+    case REACTOR_FSM_EVENT: {
+      pomodoro_err_t pomodoro_dispatch_status =
+          pomodoro_session_dispatch(&session, timestamped_event.data.fsm_event,
+                                    timestamped_event.timestamp_ms, &effects);
 
-    // === Invoke handlers ===
-    pomodoro_timer_handle_effects(&pomodoro_timer_context, &effects);
+      if (pomodoro_dispatch_status != POMODORO_STATUS_OK) {
+        const char *status_str =
+            pomodoro_err_to_string(pomodoro_dispatch_status);
+        ESP_LOGW(TAG, "Dispatch failed: %s", status_str);
+      }
 
-    if (pomodoro_dispatch_status == POMODORO_STATUS_OK) {
-      ui_update_snapshot(&ui_task_context, &session);
+      // === Invoke handlers ===
+      pomodoro_timer_handle_effects(&pomodoro_timer_context, &effects);
+
+      if (pomodoro_dispatch_status == POMODORO_STATUS_OK) {
+        ui_update_snapshot(&ui_task_context, &session);
+      }
+    } break;
+
+    case REACTOR_UI_EVENT:
+      ui_request_status(&ui_task_context);
+      break;
     }
   }
 }

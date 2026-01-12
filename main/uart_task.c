@@ -4,38 +4,48 @@
 #include "pomodoro_uart.h"
 #include "string.h"
 
-static void print_status(const pomodoro_session_t *session, uint32_t now_ms) {
-  const char *state_str = pomodoro_state_to_string(session->state);
-  const char *phase_name = session->config->phases[session->phase_index].name;
+static bool handle_command(const char *cmd, timestamped_event_t *event_ptr,
+                           uint32_t now_ms) {
+  if (strcmp(cmd, "start") == 0) {
+    event_ptr->type = REACTOR_FSM_EVENT;
+    event_ptr->data.fsm_event = POMODORO_EVT_START;
+  }
 
-  ESP_LOGI(UART_TAG,
-           "State: %s | Phase: %s | End Time: %lu ms | Remaining: %lu ms | "
-           "Now: %lu ms",
-           state_str, phase_name, session->end_time_ms, session->remaining_ms,
-           now_ms);
-}
+  else if (strcmp(cmd, "pause") == 0) {
+    event_ptr->type = REACTOR_FSM_EVENT;
+    event_ptr->data.fsm_event = POMODORO_EVT_PAUSE;
+  }
 
-static bool handle_command(const char *cmd, pomodoro_event_t *event_ptr) {
-  if (strcmp(cmd, "start") == 0)
-    *event_ptr = POMODORO_EVT_START;
+  else if (strcmp(cmd, "resume") == 0) {
+    event_ptr->type = REACTOR_FSM_EVENT;
+    event_ptr->data.fsm_event = POMODORO_EVT_RESUME;
+  }
 
-  else if (strcmp(cmd, "pause") == 0)
-    *event_ptr = POMODORO_EVT_PAUSE;
+  else if (strcmp(cmd, "skip") == 0) {
+    event_ptr->type = REACTOR_FSM_EVENT;
+    event_ptr->data.fsm_event = POMODORO_EVT_SKIP;
+  }
 
-  else if (strcmp(cmd, "resume") == 0)
-    *event_ptr = POMODORO_EVT_RESUME;
+  else if (strcmp(cmd, "timeout") == 0) {
+    event_ptr->type = REACTOR_FSM_EVENT;
+    event_ptr->data.fsm_event = POMODORO_EVT_TIMEOUT;
+  }
 
-  else if (strcmp(cmd, "skip") == 0)
-    *event_ptr = POMODORO_EVT_SKIP;
+  else if (strcmp(cmd, "restart") == 0) {
+    event_ptr->type = REACTOR_FSM_EVENT;
+    event_ptr->data.fsm_event = POMODORO_EVT_RESTART;
+  }
 
-  else if (strcmp(cmd, "timeout") == 0)
-    *event_ptr = POMODORO_EVT_TIMEOUT;
+  else if (strcmp(cmd, "status") == 0) {
+    event_ptr->type = REACTOR_UI_EVENT;
+    event_ptr->data.ui_event = UI_EVT_STATUS;
+  }
 
-  else if (strcmp(cmd, "restart") == 0)
-    *event_ptr = POMODORO_EVT_RESTART;
-  else
+  else {
     return false;
+  }
 
+  event_ptr->timestamp_ms = now_ms;
   return true;
 }
 
@@ -57,20 +67,14 @@ void uart_task(void *args) {
     if (strlen(trimmed_ptr) == 0)
       continue;
 
-    if (strcmp(trimmed_ptr, "status") == 0) {
-      print_status(ctx->pomodoro_session, pdTICKS_TO_MS(xTaskGetTickCount()));
-      continue;
-    }
-
-    bool was_command_detected =
-        handle_command(trimmed_ptr, &timestamped_event.event);
+    bool was_command_detected = handle_command(
+        trimmed_ptr, &timestamped_event, pdTICKS_TO_MS(xTaskGetTickCount()));
 
     if (!was_command_detected) {
       ESP_LOGW(UART_TAG, "Unknown command: %s", trimmed_ptr);
       continue;
     }
 
-    timestamped_event.timestamp_ms = pdTICKS_TO_MS(xTaskGetTickCount());
     xQueueSend(ctx->queue_handle, &timestamped_event, 0);
   }
 }

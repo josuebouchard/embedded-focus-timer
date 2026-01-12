@@ -6,8 +6,9 @@ static void timer_callback(void *args) {
   QueueHandle_t queue = (QueueHandle_t)args;
 
   timestamped_event_t evt = {
-      .event = POMODORO_EVT_TIMEOUT,
+      .type = REACTOR_FSM_EVENT,
       .timestamp_ms = pdTICKS_TO_MS(xTaskGetTickCount()),
+      .data.fsm_event = POMODORO_EVT_TIMEOUT,
   };
 
   xQueueSend(queue, &evt, 0);
