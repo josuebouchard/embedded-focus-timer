@@ -8,7 +8,7 @@
 #define UART_TAG "UART_TAG"
 #define UART_BUFFER_SIZE 200
 
-typedef struct {
+typedef struct uart_task_context {
   const pomodoro_session_t *pomodoro_session;
   QueueHandle_t queue_handle;
 } uart_task_context_t;

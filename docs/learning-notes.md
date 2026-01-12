@@ -48,13 +48,13 @@ The key insight: **keeping the domain pure** (FSM + rules) and pushing all I/O i
 
 ```c
 // The "thin" enum
-typedef enum {
+typedef enum event_type {
   EVENT_1,
   EVENT_2,
 } event_type_t;
 
 // The "fat" enum (tagged union)
-typedef struct {
+typedef struct event {
   // The regular enum (tag)
   event_type_t type;
 

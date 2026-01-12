@@ -6,7 +6,7 @@
 #include "freertos/queue.h"
 #include "pomodoro_fsm.h"
 
-typedef struct {
+typedef struct pomodoro_timer_context {
   esp_timer_create_args_t timer_args;
   esp_timer_handle_t timer_handle;
 } pomodoro_timer_context_t;

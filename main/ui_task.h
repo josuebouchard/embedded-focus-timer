@@ -6,7 +6,7 @@
 
 typedef pomodoro_session_t ui_fsm_snapshot_t;
 
-typedef struct {
+typedef struct ui_context {
   QueueHandle_t queue;
   ui_fsm_snapshot_t snapshot;
   char print_buffer[512];

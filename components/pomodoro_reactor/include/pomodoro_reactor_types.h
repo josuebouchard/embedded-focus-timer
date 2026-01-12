@@ -3,7 +3,7 @@
 
 #include "pomodoro_fsm.h"
 
-typedef struct {
+typedef struct timestamped_event {
   pomodoro_event_t event;
   uint32_t timestamp_ms;
 } timestamped_event_t;

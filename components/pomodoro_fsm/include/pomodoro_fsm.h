@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef enum {
+typedef enum pomodoro_err {
   POMODORO_STATUS_OK = 0,
   POMODORO_STATUS_INVALID_TRANSITION,
   POMODORO_STATUS_ILLEGAL_TRANSITION,
@@ -22,7 +22,7 @@ static inline const char *pomodoro_err_to_string(pomodoro_err_t err) {
   return (err < POMODORO_STATUS_COUNT) ? err_names[err] : "UNKNOWN";
 }
 
-typedef enum {
+typedef enum pomodoro_state {
   POMODORO_STATE_IDLE = 0,
   POMODORO_STATE_RUNNING,
   POMODORO_STATE_PAUSED,
@@ -41,7 +41,7 @@ static inline const char *pomodoro_state_to_string(pomodoro_state_t state) {
   return (state < POMODORO_STATE_COUNT) ? state_names[state] : "UNKNOWN";
 }
 
-typedef enum {
+typedef enum pomodoro_event {
   POMODORO_EVT_START = 0,
   POMODORO_EVT_PAUSE,
   POMODORO_EVT_RESUME,
@@ -52,12 +52,12 @@ typedef enum {
   POMODORO_EVT_COUNT,
 } pomodoro_event_t;
 
-typedef enum {
+typedef enum pomodoro_effect_type {
   POMODORO_EFFECT_TIMER_START,
   POMODORO_EFFECT_TIMER_STOP,
 } pomodoro_effect_type_t;
 
-typedef struct {
+typedef struct pomodoro_effect {
   pomodoro_effect_type_t type;
   union {
     struct {
@@ -68,7 +68,7 @@ typedef struct {
 
 #define MAX_EFFECTS 6
 
-typedef struct {
+typedef struct pomodoro_effects {
   pomodoro_effect_t effects[MAX_EFFECTS];
   uint32_t count;
 } pomodoro_effects_t;
@@ -80,19 +80,19 @@ void pomodoro_effects_set(pomodoro_effects_t *effects,
 
 #define MAX_NAME 25
 
-typedef struct {
+typedef struct pomodoro_phase {
   char name[MAX_NAME];
   uint32_t duration_ms;
 } pomodoro_phase_t;
 
 #define MAX_PHASES 20
 
-typedef struct {
+typedef struct pomodoro_config {
   pomodoro_phase_t phases[MAX_PHASES];
   uint32_t count;
 } pomodoro_config_t;
 
-typedef struct {
+typedef struct pomodoro_session {
   // Current state
   pomodoro_state_t state;
   // Phases - immutable after initialization
